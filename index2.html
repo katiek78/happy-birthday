@@ -1,0 +1,362 @@
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script>
+      $ = (queryString) => document.querySelector(queryString);
+
+      AFRAME.registerComponent("balloon", {
+        schema: { default: "" },
+        init() {
+          this.el.addEventListener("click", () => {
+            //blow up the balloon until it pops!!
+
+            var thisRadius =
+              this.el.childNodes[0].getDOMAttribute("geometry").radius;
+            console.log(this.el.childNodes[0]);
+            console.log(thisRadius);
+            if (thisRadius < 0.8) {
+              this.el.childNodes[0].setAttribute("geometry", {
+                radius: Number(thisRadius) + 0.1,
+              });
+            } else {
+              //oh no! it got too big and popped
+              this.el.childNodes[0].setAttribute("visible", false);
+            }
+          });
+        },
+      });
+
+      AFRAME.registerComponent("flame", {
+        schema: { default: "" },
+        init() {
+          this.el.addEventListener("click", () => {
+            var thisFlame = this.el;
+            var thisAnimation = thisFlame.childNodes[0].childNodes[0];
+            //blow out the candle!!
+
+            //save the flame tip animation's from and to values
+            var currentFromTo = [
+              thisAnimation.getAttribute("from"),
+              thisAnimation.getAttribute("to"),
+            ];
+            //make it flicker (change its from and to values)
+            thisAnimation.setAttribute("from", "40 0 0");
+            thisAnimation.setAttribute("to", "-40 0 0");
+            //after 1 second, make it go back to its original from and to values
+            setTimeout(function () {
+              thisAnimation.setAttribute("from", currentFromTo[0]);
+              thisAnimation.setAttribute("to", currentFromTo[1]);
+              //then it might go out, if you're lucky (don't forget to make a wish)
+              if (Math.random() < 0.25) {
+                //remove the tip and base of the flame
+                thisFlame.childNodes[0].setAttribute("visible", false);
+                thisFlame.childNodes[1].setAttribute("visible", false);
+              }
+            }, 1000);
+          });
+        },
+      });
+
+      var balloonMoves = [];
+
+      var count = 0;
+      for (i = 0; i < 500; i++) {
+        balloonMoves[i] = [
+          Math.random() * 0.04 - 0.02,
+          Math.random() * 0.04 - 0.02,
+          Math.random() * 0.04 - 0.02,
+        ];
+      }
+
+      const animate = () => {
+        for (i = 0; i < 500; i++) {
+          if (Math.random() > 0.99) {
+            balloonMoves[i] = [
+              Math.random() * 0.04 - 0.02,
+              Math.random() * 0.04 - 0.02,
+              Math.random() * 0.04 - 0.02,
+            ];
+          }
+        }
+        count = 0;
+        document.querySelectorAll(".balloon").forEach(function (el) {
+          el.object3D.position.x += balloonMoves[count][0];
+          el.object3D.position.y += balloonMoves[count][1];
+          el.object3D.position.z += balloonMoves[count][2];
+          if (el.object3D.position.y < 1) {
+            balloonMoves[count][1] = -balloonMoves[count][1];
+          }
+          count++;
+        });
+
+        requestAnimationFrame(animate);
+      };
+
+      requestAnimationFrame(animate);
+
+      AFRAME.registerComponent("myScene", {
+        init: function () {},
+      });
+
+      function addBalloons() {
+        let count = 0;
+        while (count < 500) {
+          var balloon = document.createElement("a-entity");
+          balloon.setAttribute("class", "balloon");
+
+          var sphere = document.createElement("a-sphere");
+          var balloonSphere = document.createElement("a-entity");
+          balloonSphere.setAttribute(
+            "geometry",
+            "primitive: sphere; radius:0.5;segmentsWidth: 40; segmentsHeight: 12"
+          );
+
+          var bottom = document.createElement("a-cone");
+          var color = `hsl(${Math.floor(Math.random() * 360)},100%,50%)`;
+
+          balloonSphere.setAttribute("material", "color:" + color);
+          sphere.setAttribute("color", color);
+          bottom.setAttribute("color", color);
+          //was 0.4
+          sphere.setAttribute("radius", "0.5");
+          bottom.setAttribute("radius-top", "0.02");
+          bottom.setAttribute("radius-bottom", "0.08");
+          bottom.setAttribute("height", "0.16");
+
+          balloon.setAttribute(
+            "position",
+            `${Math.random() * 80 - 40} ${Math.random() * 120} ${
+              Math.random() * 80 - 40
+            }`
+          );
+          bottom.setAttribute("rotation", "0 0 0");
+          bottom.setAttribute("position", "0 -0.5 0");
+
+          balloon.appendChild(balloonSphere);
+          balloon.appendChild(bottom);
+          balloon.setAttribute("balloon", count);
+          $("a-scene").appendChild(balloon);
+          count++;
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <a-scene>
+      <a-sky color="#ECECEC"></a-sky>
+
+      <a-assets>
+        <img id="d0" src="img/D0.JPG" />
+        <img id="d1" src="img/D1.JPG" />
+        <img id="d2" src="img/D2.JPG" />
+        <img id="d3" src="img/D3.JPG" />
+        <img id="d4" src="img/D4.JPG" />
+        <img id="d5" src="img/D5.JPG" />
+        <img id="d6" src="img/D6.JPG" />
+        <img id="d7" src="img/D7.JPG" />
+        <img id="d8" src="img/D8.JPG" />
+        <img id="d9" src="img/D9.JPG" />
+        <img id="grass" src="img/TexturesCom_Grass0130_1_seamless_S.jpg" />
+        <img
+          id="grass-NRM"
+          src="img/TexturesCom_Grass0130_1_seamless_S_n.jpg"
+        />
+
+        <img id="cake" src="img/TexturesCom_FoodVarious0034_1_M.jpg" />
+        <img id="cake-NRM" src="img/TexturesCom_FoodVarious0034_1_M_n.jpg" />
+
+        <img id="candle" src="img/184.JPG" />
+        <img id="candle-NRM" src="img/184_norm.JPG" />
+
+        <img
+          id="rug"
+          src="img/TexturesCom_PaperCrumpled0005_1_seamless_S.jpg"
+        />
+        <img
+          id="rug-NRM"
+          src="img/TexturesCom_PaperCrumpled0005_1_seamless_S_n.jpg"
+        />
+      </a-assets>
+
+      <a-entity id="myCircle" position="-1 1 -5" rotation="0 90 0">
+        <a-cylinder
+          id="myCake"
+          position="0 -1 0"
+          height="1"
+          color="#6B2503"
+          radius="3"
+          rotation="0 0 0"
+        ></a-cylinder>
+
+        <a-cylinder
+          id="cakeTop"
+          position="0 -0.5 0"
+          height="0.2"
+          material="normalMap: #cake-NRM; roughness: 0.8;"
+          radius="3"
+          rotation="0 0 0"
+        ></a-cylinder>
+        <a-animation
+          attribute="rotation"
+          from="0 0 0"
+          to="0 360 0"
+          repeat="indefinite"
+          easing="linear"
+          dur="80000"
+        ></a-animation>
+
+        <!--CIRCLE OF PHOTOS-->
+        <a-entity
+          id="myPhotoCircle"
+          position="-1 1 -5"
+          rotation="0 90 0"
+          animation="property: rotation; from: 0 0 0; to: 0 -360 0; dur: 80000; easing: linear"
+        >
+        </a-entity>
+      </a-entity>
+
+      <!--TEXT-->
+      <a-entity text="font: roboto; value: Via stock font name.">
+        <a-text
+          value="Happy Birthday!"
+          position="-3.5 3.5 -4"
+          rotation="0 0 0"
+          height="10"
+          width="12"
+          color="red"
+        ></a-text>
+      </a-entity>
+
+      <!--RUG-->
+
+      <a-cylinder
+        material="roughness:0.1;metalness:0.9;color:yellow"
+        height="0.1"
+        radius="3.5"
+        rotation="0 0 0"
+        color="yellow"
+        shadow="acceptShadow: true"
+        position="-1 -0.5 -5"
+      ></a-cylinder>
+      <!--GRASS-->
+      <a-plane
+        material="color:green; normal-map: #grass-NRM;
+                            normal-texture-repeat: 7 7;
+                               roughness: 0.7;"
+        height="100"
+        width="100"
+        repeat="7 7"
+        rotation="-90 0 0"
+        shadow="acceptShadow: true"
+        position="1 -0.8 -3"
+      ></a-plane>
+
+      <!--LIGHTING-->
+
+      <!--CAMERA-->
+      <a-camera>
+        <a-entity
+          cursor="fuse:true;fuseTimeout:300"
+          position="0 0 -1"
+          geometry="primitive: sphere; radius:0.005"
+          material="color:#000000; shader:flat; opacity:0.5"
+        >
+        </a-entity>
+      </a-camera>
+    </a-scene>
+
+    <script>
+      $ = (queryString) => document.querySelector(queryString);
+
+      const colors = [
+        "red",
+        "darkorange",
+        "yellow",
+        "green",
+        "blue",
+        "purple",
+        "pink",
+        "grey",
+        "black",
+        "white",
+      ];
+      for (i = 0; i < 10; i++) {
+        //create and set positions of planes
+        var thisEnt = document.createElement("a-entity");
+        var thisCandle = document.createElement("a-cylinder");
+        var thisFlame = document.createElement("a-entity");
+        var thisFlameTip = document.createElement("a-entity");
+        var thisFlameBase = document.createElement("a-sphere");
+        var thisFlameAnimation = document.createElement("a-animation");
+        var thisHolder = document.createElement("a-cone");
+
+        thisCandle.setAttribute("color", colors[i % 10]);
+        thisCandle.setAttribute("radius", 0.07);
+        thisCandle.setAttribute(
+          "material",
+          "normal-map: #candle-NRM; roughness:0.1"
+        );
+        thisCandle.setAttribute("position", `2 0 0`);
+        thisCandle.setAttribute("rotation", `0 90 0`);
+
+        thisFlameTip.setAttribute("color", "yellow");
+        thisFlameTip.setAttribute(
+          "geometry",
+          "primitive: cone;radius-bottom:0.03;height:0.1;radius-top:0.005;"
+        );
+        thisFlameTip.setAttribute("class", "flame");
+        thisFlameTip.setAttribute(
+          "material",
+          "color:orange;opacity:0.7;transparent:true;"
+        );
+        thisFlameTip.setAttribute("position", `2 0.59 0`);
+        thisFlameAnimation.setAttribute("attribute", "rotation");
+        thisFlameAnimation.setAttribute(
+          "from",
+          `${Math.random() * -16 + 8} 0 0`
+        );
+        thisFlameAnimation.setAttribute("to", `${Math.random() * 16 + 8} 0 0`);
+        thisFlameAnimation.setAttribute("repeat", "indefinite");
+        thisFlameAnimation.setAttribute("dur", `${Math.random() * 80 + 50}`);
+        thisFlameTip.appendChild(thisFlameAnimation);
+        thisFlameBase.setAttribute("color", "orange");
+        thisFlameBase.setAttribute("material", "opacity:0.8;");
+        thisFlameBase.setAttribute("radius", 0.055);
+        thisFlameBase.setAttribute("position", `2 0.54 0`);
+        thisHolder.setAttribute("color", "white");
+        thisHolder.setAttribute("height", 0.3);
+        thisHolder.setAttribute("radius-bottom", 0.1);
+        thisHolder.setAttribute("radius-top", 0.02);
+        thisHolder.setAttribute("position", `2 -0.45 0`);
+        thisHolder.setAttribute("rotation", `180 0 0`);
+        thisEnt.setAttribute("rotation", `0 ${36 * i} 0`);
+        thisFlame.setAttribute("flame", 0);
+        thisFlame.appendChild(thisFlameTip);
+        thisFlame.appendChild(thisFlameBase);
+        thisEnt.appendChild(thisCandle);
+        thisEnt.appendChild(thisFlame);
+        thisEnt.appendChild(thisHolder);
+
+        $("#myCircle").appendChild(thisEnt);
+
+        //add photos
+        //create and set positions of planes
+        var thisPhotoEnt = document.createElement("a-entity");
+        var thisPhotoPlane = document.createElement("a-plane");
+        thisPhotoPlane.setAttribute("position", `4 0 0`);
+        thisPhotoPlane.setAttribute("rotation", `0 90 0`);
+        thisPhotoPlane.setAttribute("side", "double");
+        thisPhotoPlane.setAttribute("src", "#d" + i);
+        thisPhotoEnt.setAttribute("rotation", `0 ${36 * i} 0`);
+        thisPhotoEnt.appendChild(thisPhotoPlane);
+        $("#myPhotoCircle").appendChild(thisPhotoEnt);
+      }
+
+      addBalloons();
+
+      $("#myCake").addEventListener("click", () => {
+        console.log("touched cake");
+      });
+    </script>
+  </body>
+</html>
