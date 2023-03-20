@@ -19,6 +19,7 @@ Then start the secure ngrok tunnel using ngrok http 8080.
 You will now be given a URL that you can visit in your VR device or phone.
 
 The scene:
+![ScreenShot](images/screenshot.png)
 500 balloons of different colours are randomly placed in the scene, with randomised and hopefully balloon-like movement.
 The cake holds the appropriate number of candles for the person's age.
 The photo circle features one photo for every year.
