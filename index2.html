@@ -5,6 +5,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Changa&display=swap" rel="stylesheet">
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script>
+      const birthdayText = "Happy Birthday Katie!"
+      const age = 10;
+
       $ = (queryString) => document.querySelector(queryString);
 
       AFRAME.registerComponent("balloon", {
@@ -33,23 +36,18 @@
         schema: { default: "" },
         init() {
           this.el.addEventListener("click", () => {
-            var thisFlame = this.el;
-            var thisAnimation = thisFlame.childNodes[0].childNodes[0];
+            const thisFlame = this.el;
+            const thisAnimation = thisFlame.childNodes[0].getAttribute("animation");
             //blow out the candle!!
-
-            //save the flame tip animation's from and to values
-            var currentFromTo = [
-              thisAnimation.getAttribute("from"),
-              thisAnimation.getAttribute("to"),
-            ];
-            //make it flicker (change its from and to values)
-            thisAnimation.setAttribute("from", "40 0 0");
-            thisAnimation.setAttribute("to", "-40 0 0");
-            //after 1 second, make it go back to its original from and to values
+            
+            //make it flicker more intensely (change its from and to values)
+            const newAnimationString = `property: rotation; from: 40 0 0; to: -40 0 0; loop: true; dur: ${Math.random() * 80 + 50}`;
+            thisFlame.childNodes[0].setAttribute("animation", newAnimationString);
+            
+            //after 1 second, make it go back to its original animation
             setTimeout(function () {
-              thisAnimation.setAttribute("from", currentFromTo[0]);
-              thisAnimation.setAttribute("to", currentFromTo[1]);
-              //then it might go out, if you're lucky (don't forget to make a wish)
+              thisFlame.childNodes[0].setAttribute("animation", thisAnimation);     //2023 - this isn't working, it's still flickering intensely        
+              //then it might go out, if you're lucky
               if (Math.random() < 0.25) {
                 //remove the tip and base of the flame
                 thisFlame.childNodes[0].setAttribute("visible", false);
@@ -198,21 +196,13 @@
           radius="3"
           rotation="0 0 0"
         ></a-cylinder>
-        <a-animation
-          attribute="rotation"
-          from="0 0 0"
-          to="0 360 0"
-          repeat="indefinite"
-          easing="linear"
-          dur="80000"
-        ></a-animation>
 
         <!--CIRCLE OF PHOTOS-->
         <a-entity
           id="myPhotoCircle"
           position="-1 1 -5"
           rotation="0 90 0"
-          animation="property: rotation; from: 0 0 0; to: 0 -360 0; dur:80000; easing: linear" //2023 - need to sort out duration/loop to keep it goin
+          animation="property: rotation; from: 0 0 0; to: 0 -360 0; loop: true; dur:80000; easing: linear"
         >
         </a-entity>
       </a-entity>
@@ -220,6 +210,7 @@
       <!--TEXT-->
       <a-entity text="font: roboto; value: Via stock font name.">
         <a-text
+          id="birthdayTextElement"
           value="Happy Birthday!"
           position="-3.5 3.5 -4"
           rotation="0 0 0"
@@ -283,18 +274,20 @@
         "black",
         "white",
       ];
-      for (i = 0; i < 10; i++) {
+
+
+      for (i = 0; i < age; i++) {
         //create and set positions of planes
         var thisEnt = document.createElement("a-entity");
         var thisCandle = document.createElement("a-cylinder");
         var thisFlame = document.createElement("a-entity");
         var thisFlameTip = document.createElement("a-entity");
         var thisFlameBase = document.createElement("a-sphere");
-        //2023 - need to change this to an animation property, a-animation doesn't seem to work any more
-        var thisFlameAnimation = document.createElement("a-animation");
+        
+        let thisFlameAnimation = "";
         var thisHolder = document.createElement("a-cone");
 
-        thisCandle.setAttribute("color", colors[i % 10]);
+        thisCandle.setAttribute("color", colors[i % age]);
         thisCandle.setAttribute("radius", 0.07);
         thisCandle.setAttribute(
           "material",
@@ -313,16 +306,14 @@
           "material",
           "color:orange;opacity:0.7;transparent:true;"
         );
-        thisFlameTip.setAttribute("position", `2 0.59 0`);
-        thisFlameAnimation.setAttribute("attribute", "rotation");
-        thisFlameAnimation.setAttribute(
-          "from",
-          `${Math.random() * -16 + 8} 0 0`
-        );
-        thisFlameAnimation.setAttribute("to", `${Math.random() * 16 + 8} 0 0`);
-        thisFlameAnimation.setAttribute("repeat", "indefinite");
-        thisFlameAnimation.setAttribute("dur", `${Math.random() * 80 + 50}`);
-        thisFlameTip.appendChild(thisFlameAnimation);
+        thisFlameTip.setAttribute("position", "2 0.59 0");
+        thisFlameAnimation += "property: rotation; ";
+        thisFlameAnimation += `from: ${Math.random() * -16 + 8} 0 0; `;
+        thisFlameAnimation += `to: ${Math.random() * 16 + 8} 0 0; `;
+        thisFlameAnimation += "loop: true; ";
+        thisFlameAnimation += `dur: ${Math.random() * 80 + 50};`;
+        
+        thisFlameTip.setAttribute("animation", thisFlameAnimation);        
         thisFlameBase.setAttribute("color", "orange");
         thisFlameBase.setAttribute("material", "opacity:0.8;");
         thisFlameBase.setAttribute("radius", 0.055);
@@ -333,7 +324,7 @@
         thisHolder.setAttribute("radius-top", 0.02);
         thisHolder.setAttribute("position", `2 -0.45 0`);
         thisHolder.setAttribute("rotation", `180 0 0`);
-        thisEnt.setAttribute("rotation", `0 ${36 * i} 0`);
+        thisEnt.setAttribute("rotation", `0 ${360/age * i} 0`);
         thisFlame.setAttribute("flame", 0);
         thisFlame.appendChild(thisFlameTip);
         thisFlame.appendChild(thisFlameBase);
@@ -366,14 +357,15 @@
       //          console.log("error:", err)
       //       });
 
-        thisPhotoPlane.setAttribute("src", "#d" + i);
-        // thisPhotoPlane.setAttribute("src", "https://cdn.aframe.io/360-image-gallery-boilerplate/img/thumb-city.jpg");
-        thisPhotoEnt.setAttribute("rotation", `0 ${36 * i} 0`);
+        thisPhotoPlane.setAttribute("src", "#d" + i);        
+        thisPhotoEnt.setAttribute("rotation", `0 ${360/age * i} 0`);
         thisPhotoEnt.appendChild(thisPhotoPlane);
         $("#myPhotoCircle").appendChild(thisPhotoEnt);
       }
 
       addBalloons();
+
+      $("#birthdayTextElement").setAttribute("value", birthdayText);
 
       $("#myCake").addEventListener("click", () => {
         console.log("touched cake");
