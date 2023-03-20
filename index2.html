@@ -1,5 +1,8 @@
 <html>
   <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Changa&display=swap" rel="stylesheet">
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script>
       $ = (queryString) => document.querySelector(queryString);
@@ -116,8 +119,7 @@
 
           balloonSphere.setAttribute("material", "color:" + color);
           sphere.setAttribute("color", color);
-          bottom.setAttribute("color", color);
-          //was 0.4
+          bottom.setAttribute("color", color);         
           sphere.setAttribute("radius", "0.5");
           bottom.setAttribute("radius-top", "0.02");
           bottom.setAttribute("radius-bottom", "0.08");
@@ -143,19 +145,19 @@
   </head>
   <body>
     <a-scene>
-      <a-sky color="#ECECEC"></a-sky>
+      <a-sky color="lightblue"></a-sky>
 
       <a-assets>
-        <img id="d0" src="img/D0.JPG" />
-        <img id="d1" src="img/D1.JPG" />
-        <img id="d2" src="img/D2.JPG" />
-        <img id="d3" src="img/D3.JPG" />
-        <img id="d4" src="img/D4.JPG" />
-        <img id="d5" src="img/D5.JPG" />
-        <img id="d6" src="img/D6.JPG" />
-        <img id="d7" src="img/D7.JPG" />
-        <img id="d8" src="img/D8.JPG" />
-        <img id="d9" src="img/D9.JPG" />
+        <img id="d0" src="https://picsum.photos/id/10/200/300" />
+        <img id="d1" src="https://picsum.photos/id/11/200/300" />
+        <img id="d2" src="https://picsum.photos/id/12/200/300" />
+        <img id="d3" src="https://picsum.photos/id/13/200/300" />
+        <img id="d4" src="https://picsum.photos/id/14/200/300" />
+        <img id="d5" src="https://picsum.photos/id/15/200/300" />
+        <img id="d6" src="https://picsum.photos/id/16/200/300" />
+        <img id="d7" src="https://picsum.photos/id/17/200/300" />
+        <img id="d8" src="https://picsum.photos/id/18/200/300" />
+        <img id="d9" src="https://picsum.photos/id/19/200/300" />
         <img id="grass" src="img/TexturesCom_Grass0130_1_seamless_S.jpg" />
         <img
           id="grass-NRM"
@@ -210,7 +212,7 @@
           id="myPhotoCircle"
           position="-1 1 -5"
           rotation="0 90 0"
-          animation="property: rotation; from: 0 0 0; to: 0 -360 0; dur: 80000; easing: linear"
+          animation="property: rotation; from: 0 0 0; to: 0 -360 0; dur:80000; easing: linear" //2023 - need to sort out duration/loop to keep it goin
         >
         </a-entity>
       </a-entity>
@@ -239,6 +241,7 @@
         position="-1 -0.5 -5"
       ></a-cylinder>
       <!--GRASS-->
+      
       <a-plane
         material="color:green; normal-map: #grass-NRM;
                             normal-texture-repeat: 7 7;
@@ -287,6 +290,7 @@
         var thisFlame = document.createElement("a-entity");
         var thisFlameTip = document.createElement("a-entity");
         var thisFlameBase = document.createElement("a-sphere");
+        //2023 - need to change this to an animation property, a-animation doesn't seem to work any more
         var thisFlameAnimation = document.createElement("a-animation");
         var thisHolder = document.createElement("a-cone");
 
@@ -346,7 +350,24 @@
         thisPhotoPlane.setAttribute("position", `4 0 0`);
         thisPhotoPlane.setAttribute("rotation", `0 90 0`);
         thisPhotoPlane.setAttribute("side", "double");
+
+      //   var mesh = thisPhotoPlane.getObject3D('mesh');   
+      // var loader = new THREE.TextureLoader();
+      // loader.load("img/D0.JPG", 
+      //       //onLoadCallback
+      //       function(texture) {
+      //         // apply the texture here
+      //         mesh.material.map = texture
+      //       },
+      //       // onProgressCallback - not sure if working
+      //       undefined,
+      //       // onErrorCallback
+      //       function(err) {
+      //          console.log("error:", err)
+      //       });
+
         thisPhotoPlane.setAttribute("src", "#d" + i);
+        // thisPhotoPlane.setAttribute("src", "https://cdn.aframe.io/360-image-gallery-boilerplate/img/thumb-city.jpg");
         thisPhotoEnt.setAttribute("rotation", `0 ${36 * i} 0`);
         thisPhotoEnt.appendChild(thisPhotoPlane);
         $("#myPhotoCircle").appendChild(thisPhotoEnt);
