@@ -5,6 +5,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Changa&display=swap" rel="stylesheet">
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script>
+      const birthdayText = "Happy Birthday Katie!"
+      const age = 15;
+
       $ = (queryString) => document.querySelector(queryString);
 
       AFRAME.registerComponent("balloon", {
@@ -220,6 +223,7 @@
       <!--TEXT-->
       <a-entity text="font: roboto; value: Via stock font name.">
         <a-text
+          id="birthdayTextElement"
           value="Happy Birthday!"
           position="-3.5 3.5 -4"
           rotation="0 0 0"
@@ -283,7 +287,9 @@
         "black",
         "white",
       ];
-      for (i = 0; i < 10; i++) {
+
+
+      for (i = 0; i < age; i++) {
         //create and set positions of planes
         var thisEnt = document.createElement("a-entity");
         var thisCandle = document.createElement("a-cylinder");
@@ -294,7 +300,7 @@
         var thisFlameAnimation = document.createElement("a-animation");
         var thisHolder = document.createElement("a-cone");
 
-        thisCandle.setAttribute("color", colors[i % 10]);
+        thisCandle.setAttribute("color", colors[i % age]);
         thisCandle.setAttribute("radius", 0.07);
         thisCandle.setAttribute(
           "material",
@@ -333,7 +339,7 @@
         thisHolder.setAttribute("radius-top", 0.02);
         thisHolder.setAttribute("position", `2 -0.45 0`);
         thisHolder.setAttribute("rotation", `180 0 0`);
-        thisEnt.setAttribute("rotation", `0 ${36 * i} 0`);
+        thisEnt.setAttribute("rotation", `0 ${360/age * i} 0`);
         thisFlame.setAttribute("flame", 0);
         thisFlame.appendChild(thisFlameTip);
         thisFlame.appendChild(thisFlameBase);
@@ -366,14 +372,15 @@
       //          console.log("error:", err)
       //       });
 
-        thisPhotoPlane.setAttribute("src", "#d" + i);
-        // thisPhotoPlane.setAttribute("src", "https://cdn.aframe.io/360-image-gallery-boilerplate/img/thumb-city.jpg");
-        thisPhotoEnt.setAttribute("rotation", `0 ${36 * i} 0`);
+        thisPhotoPlane.setAttribute("src", "#d" + i);        
+        thisPhotoEnt.setAttribute("rotation", `0 ${360/age * i} 0`);
         thisPhotoEnt.appendChild(thisPhotoPlane);
         $("#myPhotoCircle").appendChild(thisPhotoEnt);
       }
 
       addBalloons();
+
+      $("#birthdayTextElement").setAttribute("value", birthdayText);
 
       $("#myCake").addEventListener("click", () => {
         console.log("touched cake");
